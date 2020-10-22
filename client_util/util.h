@@ -182,9 +182,32 @@ struct req_res_packet Withdraw_u(int seq,int amount){
     req.uno = seq;
     req.status = amount;
     req.user_pri = 1;
+    
+
+    req.op_code = Withdraw;
+    res = Execute(req);
+//    printf("\nBal %ld\n",res.status);
+    return res;
+}
+
+long int ChangePass(struct account_details account, int seqno){
+    struct req_res_packet req,res;
+    req.op_code = Pass_change;
+    req.user = account;
+    req.user_pri = 1;
+    req.uno = seqno;
+    res = Execute(req);
+    return res.status;
+}
+/*
+struct req_res_packet (int seq,int amount){
+    struct req_res_packet req,res;
+    req.uno = seq;
+    req.status = amount;
+    req.user_pri = 1;
     req.op_code = Withdraw;
 
     res = Execute(req);
     //res_read(res);
     return res;
-}
+}*/

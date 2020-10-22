@@ -230,7 +230,7 @@ struct req_res_packet DebitAccount(struct req_res_packet req){
     struct req_res_packet res;
     struct account_details acc;
     int fd = open("db",O_RDWR);
-    lseek(fd,(req.uno*sizeof(req.user)),SEEK_SET);
+    lseek(fd,(req.uno*sizeof(acc)),SEEK_SET);
     struct flock lock;
     lock.l_pid = getpid();
     lock.l_len = sizeof(acc);
@@ -268,9 +268,9 @@ struct req_res_packet DebitAccount(struct req_res_packet req){
         else res.status = 0;
     }
     else res.status = -1;
+    res.user = acc;
     res.op_code = req.op_code;
     res.uno = req.uno;
     res.user_pri = req.user_pri;
-    res_read(res);
     return res;
 }

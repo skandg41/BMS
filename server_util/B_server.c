@@ -51,6 +51,12 @@ static void *Handle_client(int * arg ){
         write(*arg,&res,sizeof(res));
         printf("\nResponded %ld\n",res.status);
     }
+
+    if(req.op_code == Pass_change && req.user_pri == 1){
+        struct req_res_packet res = Update_info(req);
+        write(*arg,&res,sizeof(res));
+        printf("\nResponded %ld\n",res.status);
+    }
   /*if( close(*arg) == -1) errExit("close"); 
     exit(EXIT_SUCCESS);*/
 }
@@ -58,7 +64,7 @@ static void *Handle_client(int * arg ){
 int main(int argc, char * argv[]){
     struct sockaddr_in serv, cli;
     int sd,sz,nsd;
-    int port = 8066;
+    int port = 8065;
 
     sd = socket(AF_INET, SOCK_STREAM, 0);
     if(sd == -1) errExit("socket");

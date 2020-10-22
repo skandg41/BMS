@@ -134,7 +134,7 @@ adm_op:    printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_id
                 printf("Status %ld",res.status);
                 if(res.status == 1) {
                     account = res.user;
-                    printf("\n\t Rupees %d \n\tdeposited in Account number %ld \n\tupdated balance is %.2f\n",amount,account.Account_number,account.balance);
+                    printf("\n\t Rupees %ld \n\tdeposited in Account number %ld \n\tPlease login again to check updated balance\n"/*\n\tupdated balance is %.2f\n"*/,amount,account.Account_number/*,account.balance*/);
                 }
                 else
                 {
@@ -146,21 +146,23 @@ adm_op:    printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_id
                 printf("\n\tEnter Amount u wish to Withdraw from your account \t");
                 scanf("%ld",&amount);
                 res = Withdraw_u(seqno, amount);
-                printf("Responce received %ld",res.status);
-                if(res.status == 1) {
+                //printf("Responce received %ld",res.status);
+                if(res.status != 0) {
                     account = res.user;
-                    printf("\n\t Rupees %d \n\tdeposited in Account number %ld \n\tupdated balance is %.2f\n",amount,account.Account_number,account.balance);
+                    printf("\n\t Transection Successful please login again to check updated balance\n");
                 }
                 else if(res.status == 0)
                 {
                      printf("\n\tTransection failed please try again later\n");
                 }
-                else printf("\n\tInsufficient balance in your account\n");
                 goto usr_op;
                 break;
             
             case Pass_change:
-
+                printf("\n\tPlease enter your chosen password\t");
+                scanf("%s",account.user.password);
+                st = ChangePass(account,seqno);
+                if(st) printf("\n\tPassword changed Successfully\n\t**Please login with updated Password**\n");
                 break;
 
             case Logout:

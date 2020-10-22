@@ -8,7 +8,7 @@ struct req_res_packet Execute(struct req_res_packet req){
     if(sd == -1) errExit("socket");
     serv.sin_family= AF_INET;
     serv.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv.sin_port = htons(8066);
+    serv.sin_port = htons(8065);
 
     if (connect(sd,(void *)(&serv), sizeof(serv)) == -1 ) ;
     write(sd,&req,sizeof(req));

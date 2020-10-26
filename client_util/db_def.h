@@ -2,6 +2,11 @@
 #define Curr 2
 #define Loan 3
 
+// Status bits
+#define Active 1
+#define Deleted -1
+#define LoggedIN 0
+
 // User Types
 #define Admin 0
 #define Single 1
@@ -29,6 +34,7 @@
 #define search_user 4
 #define Admin_Logout 5
 #define Find_acc 6
+// Logout 8
 
 // DB
 

@@ -11,12 +11,12 @@ static void *Handle_client(int * arg ){
     if(req.op_code == get_data){
         res = ret_c_data(req);
         write(*arg,&res,sizeof(res));
-        printf("\nresponded %ld",res.status); 
+        printf("\nresponded %ld\n",res.status); 
     }
     if(req.op_code == login) {
         res = login_serv(req);
         write(*arg,&res,sizeof(res));
-        printf("\nresponded %ld",res.status);
+        printf("\nresponded %ld\n",res.status);
     }
     if(req.op_code == Add_user ){
         res = AddUser(req.user);
@@ -54,6 +54,12 @@ static void *Handle_client(int * arg ){
 
     if(req.op_code == Pass_change && req.user_pri == 1){
         struct req_res_packet res = Update_info(req);
+        write(*arg,&res,sizeof(res));
+        printf("\nResponded %ld\n",res.status);
+    }
+
+    if(req.op_code == Logout){
+        struct req_res_packet res = logout(req);
         write(*arg,&res,sizeof(res));
         printf("\nResponded %ld\n",res.status);
     }

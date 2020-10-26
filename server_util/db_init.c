@@ -5,7 +5,7 @@
 void main()
 {
 
-    int fd = open("./db", O_RDWR);
+    int fd = open("./db", O_CREAT | O_WRONLY , 0666);
     if(fd == -1 ) errExit("open");
 
     struct account_details admin;

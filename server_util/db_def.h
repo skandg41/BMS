@@ -4,6 +4,12 @@
 #define Curr 2
 #define Loan 3
 
+// Status bits
+#define Active 1
+#define Deleted -1
+#define LoggedIN 0
+
+
 // User Types
 #define Admin 0
 #define Single 1

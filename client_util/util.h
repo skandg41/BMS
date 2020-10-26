@@ -85,42 +85,35 @@ int update_info(struct account_details user, int seq){                    //Upda
     char flag;
     
     printf("\nCurrent mobile number in database : %ld\t", user.user.mobile_no);
-    printf("\nEnter 'y' if want to update else press any key\t\n");
-    fflush(stdin);
+    printf("\nEnter 'y' if want to update else press any key\t");
     scanf(" %c",&flag);
 
-    fflush(stdin);
     if(flag =='y' || flag =='Y'){
         printf("\nEnter New Mobile number\t");
         scanf("%ld",&user.user.mobile_no);
-        fflush(stdin);
+        
     }
 
     printf("\nCurrent email in database : %s\t", user.user.email);
     printf("\nEnter 'y' if want to update else press any key\t");
-    scanf("%c",&flag);
+    scanf(" %c",&flag);
     if(flag =='y' || flag =='Y'){
         printf("\nEnter New Email \t");
         scanf("%s",user.user.email);
-        fflush(stdin);
     }
-    printf("\nCurrent user if in database : %ld\t", user.user.user_id);
+    printf("\nCurrent user id in database : %ld\t", user.user.user_id);
     printf("\nEnter 'y' if want to update else press any key\t");
-    scanf("%c",&flag);
-    fflush(stdin);
+    scanf(" %c",&flag);
     if(flag =='y' || flag =='Y'){
         printf("\nEnter New user id \t");
         scanf("%ld",&user.user.user_id);
-        fflush(stdin);
     }
     printf("\nCurrent password in database : %s\t", user.user.password);
     printf("\nEnter 'y' if want to update else press any key\t");
-    scanf("%c",&flag);
-    fflush(stdin);
+    scanf(" %c",&flag);
     if(flag =='y' || flag =='Y'){
         printf("\nEnter New password\t");
         scanf("%s",user.user.password);
-        fflush(stdin);
     }
 
     struct req_res_packet req,res;
@@ -196,6 +189,17 @@ long int ChangePass(struct account_details account, int seqno){
     req.user = account;
     req.user_pri = 1;
     req.uno = seqno;
+    res = Execute(req);
+    return res.status;
+}
+
+int logout(struct req_res_packet detail){
+    struct req_res_packet req,res;
+    req.op_code = Logout;
+    req.user_pri = detail.status;
+    req.user = detail.user;
+    req.uno = detail.uno;
+   // printf("Logout at uno %d",req.uno);
     res = Execute(req);
     return res.status;
 }

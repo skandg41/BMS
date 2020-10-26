@@ -9,29 +9,38 @@ int main(){
     struct req_res_packet user_identity;
     long int id; char pass[15]; int plength;
     printf("\n\t\t########## Welcome To Your Bank ###################\n");
-while(1){    
-    printf("\n\t\t################ Login Here #######################\n");
-    printf("\t\tUser id :\t");
-    scanf("%ld",&id);
-    printf("\n\t\tPassword : \t");
-    plength = scanf("%s",pass);
-    
-    user_identity = dologin (id,pass,plength) ;
+    while(1){    
+            printf("\n\t\t################ Login Here #######################\n");
+            printf("\t\tUser id :\t");
+            scanf("%ld",&id);
+            printf("\n\t\tPassword : \t");
+            plength = scanf("%s",pass);
+            
+            user_identity = dologin (id,pass,plength) ;
 
-    if( user_identity.status >= 0) break;
-    else printf("\n\t\t * Invalid Login \n\t\t * Please contact Admin incase you Forgot password\n"); 
-    }
+            if( user_identity.status >= 0){
+                if(user_identity.status == 2) {
+                    printf("\n\t*User Already Logged in Kindly Logout from other device or contact Administratot*\n");
+                    return 0;
+                }
+                else break;
+            }
+            else printf("\n\t\t * Invalid Login \n\t\t * Please contact Admin incase you Forgot password\n"); 
+        }
     printf("\n\t\t *Login Successful*\nWelcome %s\n",user_identity.user.user.first_holder_name);
     long int acc;
     int st;
     printf("User Type : %d", user_identity.user.user.u_type);
+    
+    // ** Admin Functionality **
     if( user_identity.user.user.u_type == Admin){
         int admin_choice,seqno;
-adm_op:    printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_identity.user.user.first_holder_name);
+    adm_op:    
+        printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_identity.user.user.first_holder_name);
         struct account_details operating_acc;  
         printf("\n\n You can Choose one of Below options to perform Operations\n\t Add_user 1 \n\t Modify_user 2 \n\tDelete_user 3 \n\tsearch_user 4 \n\tAdmin_Logout 5\t");
         scanf("%d",&admin_choice);
-    
+
         switch(admin_choice){
             
             case Add_user:
@@ -83,16 +92,27 @@ adm_op:    printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_id
                 goto adm_op;
                 break;
             case Admin_Logout:
-                printf("\nLoging out...\n");
-                req.op_code = Admin_Logout;
-                return 0;
+                st = logout(user_identity);
+                if (st == 1) {
+                    printf("\n..Logging out... Please visit us soon %s\n",user_identity.user.user.first_holder_name);
+                    return 0;
+                }
+                else {
+                    printf("\n\tSome error occured Please try again later\n");
+                    goto adm_op;
+                }
+                break;
+            default :
+                printf("\n\t Invalid Choice\n");
                 break;
         }
     }
+
+    // ** User Functionality **
     else if(user_identity.user.user.u_type == Single || user_identity.user.user.u_type == Joint ) {                            // Status 1 if user
         int user_choice, seqno;
-
-    usr_op:    printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_identity.user.user.first_holder_name);
+    usr_op:    
+        printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_identity.user.user.first_holder_name);
         if(user_identity.user.Acc_type == Joint) printf("\t\t Welcome %s to Your Bank Management Portal \n", user_identity.user.user.second_holder_name);
         
         seqno = user_identity.uno;
@@ -166,11 +186,20 @@ adm_op:    printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_id
                 break;
 
             case Logout:
-                printf("\n..Logging out... Please visit us soon %s\n",account.user.first_holder_name);
-                return 0;
+                st = logout(user_identity);
+                if (st == 1) {
+                    printf("\n..Logging out... Please visit us soon %s\n",account.user.first_holder_name);
+                    return 0;
+                }
+                else {
+                    printf("\n\tSome error occured Please try again later\n");
+                    goto usr_op;
+                }
                 break;
-            //default :
-              //  goto usr_op;
+            default :
+                printf("\n\t Invalid Choice\n");
+                goto usr_op;
+                break;
         }
     }
     else

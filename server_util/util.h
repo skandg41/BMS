@@ -31,6 +31,7 @@ struct req_res_packet AddUser(struct account_details CIF){
     
     res.status = 1;
     res.user = CIF;
+    close(fd);
     return res;
 }
 
@@ -55,6 +56,7 @@ struct req_res_packet Update_info(struct req_res_packet req){
     lock.l_type = F_UNLCK;
     fcntl(fd,F_SETFL,&lock);
     printf("\nOutside CS\n");
+    close(fd);
     return res;
 }
 
@@ -63,7 +65,8 @@ struct req_res_packet login_serv(struct req_res_packet req){           // Login 
     int rd,i=0;
     struct req_res_packet res;
     struct account_details acc;
-    req.op_code = login;
+    
+    //req.op_code = login;
 
     int fd = open("db",O_RDONLY);
     struct flock lock;
@@ -81,19 +84,34 @@ struct req_res_packet login_serv(struct req_res_packet req){           // Login 
         fcntl(fd,F_SETLKW,&lock);
         if (rd == 0){
             res.status = -1;
+            close(fd);
             return res;
         }
+    
         else if(acc.user.user_id == req.user.user.user_id){
             int cmp = strncmp(acc.user.password,req.user.user.password,req.status);
+            printf("\n Current status bit %d\n",acc.status);
             if ( cmp == 0 ) {
-                if(acc.user.u_type == Admin) {
-                    res.status = 0;
+                struct req_res_packet forup;
+                forup.uno = i;
+                printf("\n\t Forup uno n=bit %d",forup.uno);
+                forup.user = acc;
+                if(acc.status == LoggedIN) {
+                    res.status = 2;
+                }
+                else if(acc.user.u_type == Admin) {
+                    res.status = Admin;
+                    forup.user.status = LoggedIN;
+                    Update_info(forup);
                 } 
                 else {
                     res.status = 1;  
+                    forup.user.status = LoggedIN;
+                    Update_info(forup);
                 }
                 res.uno = i;
                 res.user = acc;
+                close(fd);
                 return res; 
             }
         }
@@ -119,12 +137,14 @@ struct req_res_packet Get_seq_no(struct req_res_packet req){
         fcntl(fd,F_SETLKW,&lock);
         if (rd == 0){
             res.status = -1;
+            close(fd);
             return res;
         }
         else if(acc.Account_number == req.user.Account_number || acc.user.user_id == req.user.user.user_id)
         {
             res.uno = i;
             res.status = 1;
+            close(fd);
             return res; 
         }
         i++;
@@ -153,6 +173,7 @@ struct req_res_packet ret_c_data(struct req_res_packet req){
         res.status = 1;
     }
     else res.status = 0;
+    close(fd);
     return res;
 }
 
@@ -174,6 +195,7 @@ struct req_res_packet Del_account(struct req_res_packet req){
         fcntl(fd,F_UNLCK,&lock);
         if (rd == 0){
             res.status = -1;
+            close(fd);
             return res;
         }
 
@@ -184,10 +206,12 @@ struct req_res_packet Del_account(struct req_res_packet req){
             Update_info(req);             // Changes all other fileds to Garbage Value
             res.uno = i;
             res.status = 1;
+            close(fd);
             return res; 
         }
         i++;
     }   
+    
 }
 
 struct req_res_packet CreditAccount(struct req_res_packet req){
@@ -218,6 +242,7 @@ struct req_res_packet CreditAccount(struct req_res_packet req){
         res.status = 1;
     }
     else res.status = 0;
+    close(fd);
     return res;
 }
 
@@ -272,5 +297,41 @@ struct req_res_packet DebitAccount(struct req_res_packet req){
     res.op_code = req.op_code;
     res.uno = req.uno;
     res.user_pri = req.user_pri;
+    close(fd);
     return res;
 }
+
+struct req_res_packet logout(struct req_res_packet req){
+
+    struct req_res_packet res;
+    struct account_details acc;
+    int fd = open("db",O_RDWR);
+    lseek(fd,(req.uno*sizeof(req.user)),SEEK_SET);
+    struct flock lock;
+    lock.l_pid = getpid();
+    lock.l_len = sizeof(acc);
+    lock.l_whence = SEEK_CUR;
+    lock.l_start = 0;
+    lock.l_type = F_RDLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    int rd = read(fd,&acc,sizeof(acc));
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+
+    acc.status = Active;
+
+    lock.l_type = F_WRLCK;
+    lseek(fd,(req.uno*sizeof(req.user)),SEEK_SET);
+    fcntl(fd,F_SETLKW,&lock);
+    int wr = write(fd,&acc,sizeof(acc));
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+
+    if (wr > 0) {
+        printf("\nUser %ld Logged out Successfully\n",req.user.Account_number);
+        res.status = 1;
+    }
+    else res.status = 0;
+    return res;
+}
+

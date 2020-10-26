@@ -9,7 +9,6 @@ void pAccountDetails(struct account_details ledger ){
     printf("\n\tUser id : %ld\n\t Password : %s",ledger.user.user_id,ledger.user.password);
     printf("\n\tUser Type : %d\n",ledger.user.u_type);
     printf("\n\tUser Status : %d\n",ledger.status);
-    
 }
 
 void main(){
@@ -21,5 +20,6 @@ void main(){
         printf("\n*****At seq %d\n",i++); 
         pAccountDetails(acc);
     }
+    close(fd);
     
 }

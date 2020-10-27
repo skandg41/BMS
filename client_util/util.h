@@ -1,11 +1,12 @@
 //#include "db_def.h"
 
 void pAccountDetails(struct account_details ledger ){
-    printf("\t\t Account holder name : %s\n", ledger.user.first_holder_name);
-    if(ledger.user.u_type == Joint ) printf("\t\t Account holder name : %s\n", ledger.user.second_holder_name);
-    printf("\n Account Number : %ld \n Available Balance : %.2f \n Lien Amount : %.2f\n Address : %s, %s, %s, %s,%s \n",ledger.Account_number,ledger.balance,ledger.lien_amount, ledger.user.address,ledger.user.city,ledger.user.state,ledger.user.country,ledger.user.zip);
+    printf("\t\tAccount holder name : %s\n", ledger.user.first_holder_name);
+    if(ledger.user.u_type == Joint ) printf("\t\tAccount holder name : %s\n", ledger.user.second_holder_name);
+    printf("\nAccount Number : %ld \nAvailable Balance : %.2f \nLien Amount : %.2f\nAddress : %s, %s, %s, %s,%s \n",ledger.Account_number,ledger.balance,ledger.lien_amount, ledger.user.address,ledger.user.city,ledger.user.state,ledger.user.country,ledger.user.zip);
     printf("Mobile : %ld\n email : %s", ledger.user.mobile_no,ledger.user.email);
     printf("\nUser id : %ld \nPassword : %s",ledger.user.user_id,ledger.user.password);
+    printf("\n\tLast transection on account:\n\t\tDate : %s\n\t\tAmount : %d\n\t\tUpdated Balance : %.2f\n",ledger.ledger.dtime,ledger.ledger.amount,ledger.ledger.balance);
 }
 
 long int gen_random(){
@@ -21,13 +22,13 @@ int feed_Details(){                                               // Sets up a n
     CIF.status = 1;
     while(1)
     {
-        printf("Enter type of Account \t 1 for Saving \n\t\t 2 for Current \n\t\t 3 for Loan\t");
+        printf("Enter type of Account \t1 for Saving \n\t\t2 for Current \n\t\t3 for Loan\t");
         scanf("%d",&CIF.Acc_type);
         fflush(stdin);
-        printf("\nEnter Holding Type : \t 1 for Single Holder \n\t\t 2 for Joint Holding\n");
+        printf("\nEnter Holding Type : \t1 for Single Holder \n\t\t2 for Joint Holding\n");
         scanf("%d",&CIF.user.u_type);
         fflush(stdin);
-        if( (CIF.Acc_type == SB || CIF.Acc_type == Curr || CIF.Acc_type == Loan)  && ( CIF.user.u_type == Single || CIF.user.u_type == Joint ) ) {
+        if( (CIF.Acc_type == SB || CIF.Acc_type == Curr || CIF.Acc_type == Loan)  && ( CIF.user.u_type == Single || CIF.user.u_type == Joint || CIF.user.u_type == Admin) ) {
             break;
         }
     }
@@ -203,15 +204,3 @@ int logout(struct req_res_packet detail){
     res = Execute(req);
     return res.status;
 }
-/*
-struct req_res_packet (int seq,int amount){
-    struct req_res_packet req,res;
-    req.uno = seq;
-    req.status = amount;
-    req.user_pri = 1;
-    req.op_code = Withdraw;
-
-    res = Execute(req);
-    //res_read(res);
-    return res;
-}*/

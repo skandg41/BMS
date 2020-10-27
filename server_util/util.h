@@ -55,7 +55,7 @@ struct req_res_packet Update_info(struct req_res_packet req){
     }
     lock.l_type = F_UNLCK;
     fcntl(fd,F_SETFL,&lock);
-    printf("\nOutside CS\n");
+    //printf("\nOutside CS\n");
     close(fd);
     return res;
 }
@@ -90,11 +90,11 @@ struct req_res_packet login_serv(struct req_res_packet req){           // Login 
     
         else if(acc.user.user_id == req.user.user.user_id){
             int cmp = strncmp(acc.user.password,req.user.user.password,req.status);
-            printf("\n Current status bit %d\n",acc.status);
+            //printf("\n Current status bit %d\n",acc.status);
             if ( cmp == 0 ) {
                 struct req_res_packet forup;
                 forup.uno = i;
-                printf("\n\t Forup uno n=bit %d",forup.uno);
+                //printf("\n\t Forup uno n=bit %d",forup.uno);
                 forup.user = acc;
                 if(acc.status == LoggedIN) {
                     res.status = 2;
@@ -230,11 +230,16 @@ struct req_res_packet CreditAccount(struct req_res_packet req){
     lock.l_type = F_UNLCK;
     fcntl(fd,F_SETLKW,&lock);
     acc.balance = (float)((float)acc.balance + req.status);
+    time(&t);
+    strncpy(acc.ledger.dtime ,ctime(&t),24 );
+    acc.ledger.amount = (int)req.status;
+    acc.ledger.balance = acc.balance;
     lseek(fd,(req.uno*sizeof(req.user)),SEEK_SET);
     lock.l_type = F_WRLCK;
     int sl = fcntl(fd,F_SETLKW,&lock);
     int wr = write(fd,&acc,sizeof(acc));
     lock.l_type = F_UNLCK;
+
     int sul = fcntl(fd,F_SETLKW,&lock);
 
     if(wr >0 && sl==0 && sul ==0 ){
@@ -268,11 +273,15 @@ struct req_res_packet DebitAccount(struct req_res_packet req){
     lock.l_type = F_UNLCK;
     fcntl(fd,F_SETLKW,&lock);
     
-    printf("\nWithdraw request amount %ld",req.status);
-    printf("\nAvailable Balance %.2f",acc.balance);
+    //printf("\nWithdraw request amount %ld",req.status);
+    //printf("\nAvailable Balance %.2f",acc.balance);
     
     if( acc.balance >= req.status ){    
         acc.balance = ((float)acc.balance - (float) req.status);
+        time(&t);
+        strncpy(acc.ledger.dtime,ctime(&t),24);
+        acc.ledger.amount = -1 * req.status;
+        acc.ledger.balance = acc.balance;
         lseek(fd,(req.uno*sizeof(req.user)),SEEK_SET);
         
         lock.l_type = F_WRLCK;
@@ -282,8 +291,8 @@ struct req_res_packet DebitAccount(struct req_res_packet req){
         lock.l_type = F_UNLCK;
         fcntl(fd,F_SETLKW,&lock);
 
-        printf("\nUpdated Balance %.2f",acc.balance);
-        printf("\nWrite %d",wr);
+        //printf("\nUpdated Balance %.2f",acc.balance);
+        //printf("\nWrite %d",wr);
         
         if(wr > 0 ){
             res.user = acc;

@@ -20,25 +20,25 @@ int main(){
 
             if( user_identity.status >= 0){
                 if(user_identity.status == 2) {
-                    printf("\n\t*User Already Logged in Kindly Logout from other device or contact Administratot*\n");
+                    printf("\n\t*User Already Logged in Kindly Logout from other device or contact Administrator*\n");
                     return 0;
                 }
                 else break;
             }
             else printf("\n\t\t * Invalid Login \n\t\t * Please contact Admin incase you Forgot password\n"); 
         }
-    printf("\n\t\t *Login Successful*\nWelcome %s\n",user_identity.user.user.first_holder_name);
+    printf("\n\t\t*Login Successful*\n\t\tWelcome %s\n",user_identity.user.user.first_holder_name);
     long int acc;
     int st;
-    printf("User Type : %d", user_identity.user.user.u_type);
+    //printf("User Type : %d", user_identity.user.user.u_type);
     
     // ** Admin Functionality **
     if( user_identity.user.user.u_type == Admin){
         int admin_choice,seqno;
     adm_op:    
-        printf("\n\t\t Welcome %s to Your Bank Management Portal \n", user_identity.user.user.first_holder_name);
+        printf("\n\t\tWelcome %s to Your Bank Management Portal \n", user_identity.user.user.first_holder_name);
         struct account_details operating_acc;  
-        printf("\n\n You can Choose one of Below options to perform Operations\n\t Add_user 1 \n\t Modify_user 2 \n\tDelete_user 3 \n\tsearch_user 4 \n\tAdmin_Logout 5\t");
+        printf("\n\nYou can Choose one of Below options to perform Operations\n\t Add_user 1 \n\t Modify_user 2 \n\tDelete_user 3 \n\tsearch_user 4 \n\tAdmin_Logout 5\t");
         scanf("%d",&admin_choice);
 
         switch(admin_choice){
@@ -50,7 +50,6 @@ int main(){
                 goto adm_op;
                 break;
             case Modify_user:
-                 
                 printf("\nEnter user account number or user id\t");
                 scanf("%ld",&acc);
                 int seq = getseqno(acc);
@@ -104,6 +103,7 @@ int main(){
                 break;
             default :
                 printf("\n\t Invalid Choice\n");
+                goto adm_op;
                 break;
         }
     }
@@ -118,14 +118,14 @@ int main(){
         seqno = user_identity.uno;
         
         if ( user_identity.user.status < 0 || user_identity.uno < 1 ) {
-            printf("\n User either Inactive or does not exists\n");
+            printf("\nUser either Inactive or does not exists\n");
             return 0;
         }            
         
         struct account_details account;
         account = user_identity.user;
         long int amount;
-        printf("\n\n You can Choose one of Below options to perform Operations\n\t Create new Account 1 \n\t Update your Account 2 \n\tGet Acc Details 3 \n\tBalance Enquiry 4 \n\tDeposite 5\n\tWithdraw 6\n\tChange Password 7\n\tLogout 8\t");
+        printf("\n\nYou can Choose one of Below options to perform Operations\n\t Create new Account 1 \n\t Update your Account 2 \n\tGet Acc Details 3 \n\tBalance Enquiry 4 \n\tDeposite 5\n\tWithdraw 6\n\tChange Password 7\n\tLogout 8\t");
         scanf("%d",&user_choice);
         
         switch(user_choice){       
@@ -154,7 +154,7 @@ int main(){
                 printf("Status %ld",res.status);
                 if(res.status == 1) {
                     account = res.user;
-                    printf("\n\t Rupees %ld \n\tdeposited in Account number %ld \n\tPlease login again to check updated balance\n"/*\n\tupdated balance is %.2f\n"*/,amount,account.Account_number/*,account.balance*/);
+                    printf("\n\tRupees %ld \n\tdeposited in Account number %ld \n\tPlease login again to check updated balance\n"/*\n\tupdated balance is %.2f\n"*/,amount,account.Account_number/*,account.balance*/);
                 }
                 else
                 {
@@ -169,11 +169,11 @@ int main(){
                 //printf("Responce received %ld",res.status);
                 if(res.status != 0) {
                     account = res.user;
-                    printf("\n\t Transection Successful please login again to check updated balance\n");
+                    printf("\n\tTransaction Successful please login again to check updated balance\n");
                 }
                 else if(res.status == 0)
                 {
-                     printf("\n\tTransection failed please try again later\n");
+                     printf("\n\tTransaction failed please try again later\n");
                 }
                 goto usr_op;
                 break;
